@@ -543,13 +543,14 @@ var Utils = (function() {
 		return arr.splice(Math.floor(Math.random() * arr.length));
 	};
 
-	Utils.toQueryString = function(params) {
-		var parts = [];
+	Utils.toQueryString = function(params, uri) {
+		var parts = [],
+				prefix = uri && (String(uri).indexOf('?') > -1) ? '&' : '?';
 		if(params) {
 			for(var key in params)
 				parts.push(encodeURIComponent(key) + '=' + encodeURIComponent(params[key]));
 		}
-		return parts.length ? '?' + parts.join('&') : '';
+		return parts.length ? prefix + parts.join('&') : '';
 	};
 
 	Utils.parseQueryString = function(query) {
@@ -683,7 +684,7 @@ var XHRRequest = (function() {
 		EventEmitter.call(this);
 		params = params || {};
 		params.rnd = String(Math.random()).substr(2);
-		this.uri = uri + Utils.toQueryString(params);
+		this.uri = uri + Utils.toQueryString(params, uri);
 		this.headers = headers || {};
 		this.body = body;
 		this.requestMode = requestMode;
@@ -736,7 +737,10 @@ var XHRRequest = (function() {
 
 		xhr.open(method, this.uri, true);
 		xhr.responseType = responseType;
-		xhr.withCredentials = 'true';
+
+		if ('authorization' in headers) {
+			xhr.withCredentials = 'true';
+		}
 
 		for(var h in headers)
 			xhr.setRequestHeader(h, headers[h]);
