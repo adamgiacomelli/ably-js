@@ -84,7 +84,7 @@ define(['spec/common/modules/testapp_module', 'spec/common/modules/client_module
 
 		/* Wraps all tests with a timeout so that they don't run indefinitely */
 		var withTimeout = function(exports, defaultTimeout) {
-			var timeout = defaultTimeout || 60 * 1000;
+			var timeout = 20 * 1000;
 
 			for (var needle in exports) {
 				if (exports.hasOwnProperty(needle)) {

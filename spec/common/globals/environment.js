@@ -2,11 +2,11 @@
 
 define(function(require) {
 	var environment = isBrowser ? (window.__env__ || {}) : process.env,
-		ablyEnvironment = environment.ABLY_ENV || 'sandbox',
+		ablyEnvironment = environment.ABLY_ENV || 'local',
 		wsHost = environment.ABLY_REALTIME_HOST,
 		host = environment.ABLY_REST_HOST,
-		port = environment.ABLY_PORT || 80,
-		tlsPort = environment.ABLY_TLS_PORT || 443,
+		port = environment.ABLY_PORT || 8080,
+		tlsPort = environment.ABLY_TLS_PORT || 8081,
 		tls = ('ABLY_USE_TLS' in environment) ? (environment.ABLY_USE_TLS.toLowerCase() !== 'false') : true;
 
 	if (isBrowser) {
