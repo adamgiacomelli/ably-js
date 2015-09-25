@@ -72,16 +72,18 @@ define(['ably', 'shared_helper'], function(Ably, helper) {
 	exports.publishVariations = function(test) {
 		var transport = 'binary';
 		var testData = 'Some data'
-		var errorCallback = function(err){
-			if(err) {
-				test.ok(false, 'Error received by publish callback ' + err);
-				closeAndFinish(test, realtime);
-				return;
-			}
+		var errorCallback = function(testArgument){
+			return function(err) {
+				if(err) {
+					test.ok(false, 'Error received by publish callback ' + err + ' for argument ' + testArgument);
+					closeAndFinish(test, realtime);
+					return;
+				}
+			};
 		};
 		var testArguments = [
 			[{name: 'objectWithName'}],
-			[{name: 'objectWithNameAndCallback'}, errorCallback],
+			[{name: 'objectWithNameAndCallback'}],
 			[{name: 'objectWithNameAndNullData', data: null}],
 			[{name: 'objectWithNameAndUndefinedData', data: undefined}],
 			[{name: 'objectWithNameAndEmptyStringData', data: ''}],
@@ -89,12 +91,12 @@ define(['ably', 'shared_helper'], function(Ably, helper) {
 			['nameAndUndefinedData', undefined],
 			['nameAndEmptyStringData', ''],
 			['nameAndData', testData],
-			['nameAndDataAndCallback', testData, errorCallback],
+			['nameAndDataAndCallback', testData],
 			[{name: 'objectWithNameAndData', data: testData}],
-			[{name: 'objectWithNameAndDataAndCallback', data: testData}, errorCallback],
+			[{name: 'objectWithNameAndDataAndCallback', data: testData}],
 			// 6 messages with null name,
 			[null, testData],
-			[null, testData, errorCallback],
+			[null, testData],
 			[{name: null, data: testData}],
 			[null, null],
 			[{name: null}],
@@ -165,9 +167,12 @@ define(['ably', 'shared_helper'], function(Ably, helper) {
 					});
 
 					/* publish events */
-					var restChannel = rest.channels.get('publishVariations');
+					var restChannel = rest.channels.get('publishVariations'),
+							publishArgs;
 					for(var i = 0; i < testArguments.length; i++) {
-						restChannel.publish.apply(restChannel, testArguments[i]);
+						publishArgs = testArguments[i].slice(0);
+						publishArgs.push(errorCallback(testArguments[i]));
+						restChannel.publish.apply(restChannel, publishArgs);
 					}
 				});
 			});
