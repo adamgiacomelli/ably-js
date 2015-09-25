@@ -88,20 +88,22 @@ define(['spec/common/modules/testapp_module', 'spec/common/modules/client_module
 
 			for (var needle in exports) {
 				if (exports.hasOwnProperty(needle)) {
-					(function(originalFn) {
+					(function(originalFn, testName) {
 						exports[needle] = function(test) {
 							var originalDone = test.done;
 							test.done = function() {
 								clearTimeout(timer);
+								console.log("Completed test " + testName);
 								originalDone.apply(test, arguments);
 							};
 							var timer = setTimeout(function() {
 								test.ok(false, "Test timed out after " + (timeout / 1000) + "s");
 								test.done();
 							}, timeout);
+							console.log("Starting test " + testName);
 							originalFn(test);
 						};
-					})(exports[needle]);
+					})(exports[needle], needle);
 				}
 			}
 
