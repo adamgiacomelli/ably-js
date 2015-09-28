@@ -91,5 +91,28 @@ define(['ably', 'shared_helper', 'async'], function(Ably, helper, async) {
 		}
 	};
 
+	/*
+	 * Connect to an invalid host, then close the connection explicitly and ensure
+	 * that the resources are freed up. If the resources are not freed up, the Node.js tests
+	 * will never exit
+	 */
+	exports.ensure_resources_freed_after_failure = function(test) {
+		test.expect(2);
+		try {
+			var realtime = helper.AblyRealtime({ host: 'this.does.not.exist', wsHost: 'this.does.not.exist' });
+			realtime.connection.once('disconnected', function() {
+				test.ok(true, 'Expected disconnected state');
+				realtime.close();
+				setTimeout(function() {
+					test.ok(realtime.connection.state === 'closed', 'Connection closed');
+					test.done();
+				}, 2000);
+			});
+		} catch(e) {
+			test.ok(false, 'connection failed with exception: ' + e.stack);
+			closeAndFinish(test, realtime);
+		}
+	};
+
 	return module.exports = helper.withTimeout(exports);
 });
