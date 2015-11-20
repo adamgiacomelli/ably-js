@@ -66,7 +66,8 @@ var Transport = (function() {
 			break;
 		case actions.CONNECTED:
 			this.onConnect(message);
-			this.emit('connected', null, (message.connectionDetails ? message.connectionDetails.connectionKey : message.connectionKey), message.connectionSerial, message.connectionId, (message.connectionDetails ? message.connectionDetails.clientId : null));
+			var connectionDetails = message.connectionDetails;
+			this.emit('connected', null, connectionDetails.connectionKey, message.connectionSerial, message.connectionId, connectionDetails);
 			break;
 		case actions.CLOSED:
 			this.isConnected = false;

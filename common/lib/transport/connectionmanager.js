@@ -28,8 +28,8 @@ var ConnectionManager = (function() {
 		this.connectionKey = connectionKey;
 		this.connectionSerial = connectionSerial;
 		this.format = options.useBinaryProtocol ? 'msgpack' : 'json';
-		if(options.transportParams && options.transportParams.stream !== undefined)
-			this.stream = options.transportParams.stream;
+		if(options.transportParams)
+			this.transportParams = options.transportParams;
 	}
 
 	TransportParams.prototype.getConnectParams = function(params) {
@@ -68,8 +68,8 @@ var ConnectionManager = (function() {
 			params.echo = 'false';
 		if(this.format !== undefined)
 			params.format = this.format;
-		if(this.stream !== undefined)
-			params.stream = this.stream;
+		if(this.transportParams !== undefined)
+			Utils.mixin(params, this.transportParams);
 		return params;
 	};
 
@@ -349,11 +349,11 @@ var ConnectionManager = (function() {
 		this.pendingTransports.push(transport);
 
 		var self = this;
-		transport.on('connected', function(error, connectionKey, connectionSerial, connectionId, clientId) {
+		transport.on('connected', function(error, connectionKey, connectionSerial, connectionId, connectionDetails) {
 			if(mode == 'upgrade' && self.activeProtocol) {
 				self.scheduleTransportActivation(transport);
 			} else {
-				self.activateTransport(transport, connectionKey, connectionSerial, connectionId, clientId);
+				self.activateTransport(transport, connectionKey, connectionSerial, connectionId, connectionDetails);
 			}
 		});
 
@@ -414,7 +414,7 @@ var ConnectionManager = (function() {
 	 * @param connectionSerial the current connectionSerial
 	 * @param connectionId the id of the new active connection
 	 */
-	ConnectionManager.prototype.activateTransport = function(transport, connectionKey, connectionSerial, connectionId, clientId) {
+	ConnectionManager.prototype.activateTransport = function(transport, connectionKey, connectionSerial, connectionId, connectionDetails) {
 		Logger.logAction(Logger.LOG_MINOR, 'ConnectionManager.activateTransport()', 'transport = ' + transport);
 		if(connectionKey)
 			Logger.logAction(Logger.LOG_MICRO, 'ConnectionManager.activateTransport()', 'connectionKey =  ' + connectionKey);
@@ -422,6 +422,7 @@ var ConnectionManager = (function() {
 			Logger.logAction(Logger.LOG_MICRO, 'ConnectionManager.activateTransport()', 'connectionSerial =  ' + connectionSerial);
 		if(connectionId)
 			Logger.logAction(Logger.LOG_MICRO, 'ConnectionManager.activateTransport()', 'connectionId =  ' + connectionId);
+		var clientId = connectionDetails && connectionDetails.clientId;
 		if(clientId)
 			Logger.logAction(Logger.LOG_MICRO, 'ConnectionManager.activateTransport()', 'clientId =  ' + clientId);
 
@@ -439,9 +440,7 @@ var ConnectionManager = (function() {
 		var existingActiveProtocol = this.activeProtocol;
 		this.activeProtocol = new Protocol(transport);
 		this.host = transport.params.host;
-		if(connectionKey && this.connectionKey != connectionKey)  {
-			this.setConnection(connectionId, connectionKey, connectionSerial);
-		}
+		this.setConnection(connectionId, connectionKey, connectionSerial, connectionDetails);
 
 		var auth = this.realtime.auth;
 		if(clientId) {
@@ -536,14 +535,17 @@ var ConnectionManager = (function() {
 		});
 	};
 
-	ConnectionManager.prototype.setConnection = function(connectionId, connectionKey, connectionSerial) {
-		this.realtime.connection.id = this.connectionId = connectionId;
-		this.realtime.connection.key = this.connectionKey = connectionKey;
-		this.realtime.connection.serial = this.connectionSerial = (connectionSerial === undefined) ? -1 : connectionSerial;
-		this.msgSerial = 0;
-		if(this.options.recover === true)
-			this.persistConnection();
-
+	ConnectionManager.prototype.setConnection = function(connectionId, connectionKey, connectionSerial, connectionDetails) {
+		var connection = this.realtime.connection;
+		connection.details = connectionDetails;
+		if(connectionKey != this.connectionKey) {
+			connection.id = this.connectionId = connectionId;
+			connection.key = this.connectionKey = connectionKey;
+			connection.serial = this.connectionSerial = (connectionSerial === undefined) ? -1 : connectionSerial;
+			this.msgSerial = 0;
+			if(this.options.recover === true)
+				this.persistConnection();
+		}
 	};
 
 	ConnectionManager.prototype.clearConnection = function() {
