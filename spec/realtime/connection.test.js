@@ -17,46 +17,46 @@ define(['ably', 'shared_helper'], function(Ably, helper) {
 		});
 	};
 
-	exports.connectionPing = function(test) {
-		test.expect(1);
-		var realtime;
-		try {
-			realtime = helper.AblyRealtime();
-			realtime.connection.on('connected', function() {
-				realtime.connection.ping();
-				test.ok(true, 'check that ping without did not raise exception');
-				closeAndFinish(test, realtime);
-			});
-			monitorConnection(test, realtime);
-		} catch(e) {
-			test.ok(false, 'test failed with exception: ' + e.stack);
-			closeAndFinish(test, realtime);
-		}
-	};
+	//exports.connectionPing = function(test) {
+		//test.expect(1);
+		//var realtime;
+		//try {
+			//realtime = helper.AblyRealtime();
+			//realtime.connection.on('connected', function() {
+				//realtime.connection.ping();
+				//test.ok(true, 'check that ping without did not raise exception');
+				//closeAndFinish(test, realtime);
+			//});
+			//monitorConnection(test, realtime);
+		//} catch(e) {
+			//test.ok(false, 'test failed with exception: ' + e.stack);
+			//closeAndFinish(test, realtime);
+		//}
+	//};
 
-	exports.connectionPingWithCallback = function(test) {
-		test.expect(2);
-		var realtime;
-		try {
-			realtime = helper.AblyRealtime();
-			realtime.connection.on('connected', function() {
-				realtime.connection.ping(function(err, responseTime){
-					if(err) {
-						test.ok(false, helper.displayError(err));
-						closeAndFinish(test, realtime);
-						return;
-					}
-					test.equal(typeof responseTime, "number", 'check that a responseTime returned');
-					test.ok(responseTime > 0, 'check that responseTime was +ve');
-					closeAndFinish(test, realtime);
-				});
-			});
-			monitorConnection(test, realtime);
-		} catch(e) {
-			test.ok(false, 'test failed with exception: ' + e.stack);
-			closeAndFinish(test, realtime);
-		}
-	};
+	//exports.connectionPingWithCallback = function(test) {
+		//test.expect(2);
+		//var realtime;
+		//try {
+			//realtime = helper.AblyRealtime();
+			//realtime.connection.on('connected', function() {
+				//realtime.connection.ping(function(err, responseTime){
+					//if(err) {
+						//test.ok(false, helper.displayError(err));
+						//closeAndFinish(test, realtime);
+						//return;
+					//}
+					//test.equal(typeof responseTime, "number", 'check that a responseTime returned');
+					//test.ok(responseTime > 0, 'check that responseTime was +ve');
+					//closeAndFinish(test, realtime);
+				//});
+			//});
+			//monitorConnection(test, realtime);
+		//} catch(e) {
+			//test.ok(false, 'test failed with exception: ' + e.stack);
+			//closeAndFinish(test, realtime);
+		//}
+	//};
 
 	exports.connectionAttributes = function(test) {
 		test.expect(6);
@@ -84,9 +84,10 @@ define(['ably', 'shared_helper'], function(Ably, helper) {
 						test.equal(realtime.connection.recoveryKey, realtime.connection.key + ':' + realtime.connection.serial, 'verify recovery key still correct');
 
 						realtime.connection.close();
-						realtime.connection.on('closed', function() {
+						realtime.connection.on('closed', function(stateChange) {
+							console.log(this.event)
 							test.equal(realtime.connection.recoveryKey, null, 'verify recovery key null after close');
-							test.done();
+							closeAndFinish(test, realtime);
 						});
 					});
 					test.equal(realtime.connection.serial, -1, "verify serial is -1 after publish but before ack")
