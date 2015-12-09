@@ -66,6 +66,7 @@ define(['ably', 'shared_helper'], function(Ably, helper) {
 			realtime.connection.on('connected', function() {
 				test.equal(realtime.connection.serial, -1, "verify serial is -1 on connect");
 				test.equal(realtime.connection.recoveryKey, realtime.connection.key + ':' + realtime.connection.serial, 'verify correct recovery key');
+				console.log('connected, 2 assertions');
 
 				var channel = realtime.channels.get('connectionattributes');
 				channel.attach(function(err) {
@@ -80,16 +81,21 @@ define(['ably', 'shared_helper'], function(Ably, helper) {
 							closeAndFinish(test, realtime);
 							return;
 						}
+						console.log(realtime.connection.serial, "2 more assertions (5)");
 						test.equal(realtime.connection.serial, 0, "verify serial is 0 after ack received")
 						test.equal(realtime.connection.recoveryKey, realtime.connection.key + ':' + realtime.connection.serial, 'verify recovery key still correct');
 
 						realtime.connection.close();
 						realtime.connection.on('closed', function(stateChange) {
-							console.log(this.event)
-							test.equal(realtime.connection.recoveryKey, null, 'verify recovery key null after close');
-							closeAndFinish(test, realtime);
+							console.log('closed');
+							setTimeout(function() {
+								console.log('6th assertion')
+								test.equal(realtime.connection.recoveryKey, null, 'verify recovery key null after close');
+								// closeAndFinish(test, realtime);
+							}, 0);
 						});
 					});
+					console.log("3rd assertion")
 					test.equal(realtime.connection.serial, -1, "verify serial is -1 after publish but before ack")
 				});
 			});
