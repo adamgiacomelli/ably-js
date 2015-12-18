@@ -11,6 +11,7 @@ shopt -s xpg_echo
 echo "\n$GREEN -> Installing all dependencies $NO_COLOUR"
 npm install
 npm install grunt-cli
+npm rebuild
 
 echo "\n$GREEN -> Running Node unit test suite $NO_COLOUR"
 npm test
