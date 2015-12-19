@@ -36,7 +36,7 @@
     "karma-requirejs": "~0.2",
     "karma-sauce-launcher": "~0.2",
     "karma-story-reporter": "~0.3",
-    "kexec": "^2.0.2",
+    "kexec": "~2.0",
     "nodeunit": "~0.9",
     "requirejs": "~2.1",
     "shelljs": "~0.3"
