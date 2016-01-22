@@ -113,7 +113,6 @@ module.exports = function(config) {
 
       // List of Tests to run
       // To run an individual test, comment the patterns below and specify path to a single test file
-      { pattern: 'spec/realtime/message.test.js', included: false },
       { pattern: 'spec/realtime/*.test.js', included: false },
       { pattern: 'spec/rest/*.test.js', included: false },
       { pattern: 'spec/browser/*.test.js', included: false }
@@ -126,16 +125,16 @@ module.exports = function(config) {
       'spec/support/nodeunit.js'
     ],
 
-    middleware: ['cors'],
-    plugins: [
-      'karma-*',
-      {'middleware:cors': ['value', function(req, res, next) {
-        console.log("adding cors headers")
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        res.setHeader('Access-Control-Allow-Methods', '*');
-        next();
-      }]}
-    ],
+    customHeaders: [{
+      match: '.*',
+      name: 'Access-Control-Allow-Origin',
+      value: '*'
+    },
+    {
+      match: '.*',
+      name: 'Access-Control-Allow-Methods',
+      value: '*'
+    }],
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
