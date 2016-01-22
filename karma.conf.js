@@ -126,6 +126,16 @@ module.exports = function(config) {
       'spec/support/nodeunit.js'
     ],
 
+    middleware: ['cors'],
+    plugins: [
+      'karma-*',
+      {'middleware:cors': ['value', function(req, res, next) {
+        console.log("adding cors headers")
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Methods', '*');
+        next();
+      }]}
+    ],
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
