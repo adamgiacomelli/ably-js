@@ -76,8 +76,8 @@ define(['globals', 'browser-base64', 'ably'], function(ablyGlobals, base64, ably
 					for (var h in options.headers) if (h !== 'Content-Length') xhr.setRequestHeader(h, options.headers[h]);
 				}
 				xhr.onerror = function(err) {
-					console.log("xhr/xdr calling back with err, ", JSON.stringify(err))
-					callback(err);
+					console.log("xhr/xdr calling back with err, ", err, err.toString(), JSON.stringify(err))
+					//callback(err);
 				};
 				if('onreadystatechange' in xhr) {
 					console.log("xhr")
