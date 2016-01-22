@@ -75,8 +75,12 @@ define(['globals', 'browser-base64', 'ably'], function(ablyGlobals, base64, ably
 				if(options.headers && !xhr.isXDR) {
 					for (var h in options.headers) if (h !== 'Content-Length') xhr.setRequestHeader(h, options.headers[h]);
 				}
-				xhr.onerror = function(err) { callback(err); };
+				xhr.onerror = function(err) {
+					console.log("xhr/xdr calling back with err, ", JSON.stringify(err))
+					callback(err);
+				};
 				if('onreadystatechange' in xhr) {
+					console.log("xhr")
 					/* XHR */
 					xhr.onreadystatechange = function() {
 						if(xhr.readyState == 4) {
@@ -214,6 +218,11 @@ define(['globals', 'browser-base64', 'ably'], function(ablyGlobals, base64, ably
 		console.log("Loading json data browser ", JSON.stringify(getOptions))
 
 		httpReq(getOptions, function(err, data) {
+			if(err) {
+				console.log("ljdb err ", JSON.stringify(err))
+				callback(err);
+				return;
+			}
 			try {
 				console.log("Parsing json data ", data )
 				data = JSON.parse(data);
