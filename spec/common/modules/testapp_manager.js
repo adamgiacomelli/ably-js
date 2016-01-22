@@ -124,6 +124,7 @@ define(['globals', 'browser-base64', 'ably'], function(ablyGlobals, base64, ably
 
 	function createNewApp(callback) {
 		loadJsonData(testResourcesPath + 'test-app-setup.json', function(err, testData){
+			console.log("JSON data loadad, ", JSON.stringify(err), JSON.stringify(testData))
 			if(err) {
 				callback(err);
 				return;
@@ -206,11 +207,15 @@ define(['globals', 'browser-base64', 'ably'], function(ablyGlobals, base64, ably
 			scheme: window.location.protocol.slice(0, -1),
 			headers: { 'Content-Type': 'application/json' }
 		};
+		console.log("Loading json data browser ", JSON.stringify(getOptions))
 
 		httpReq(getOptions, function(err, data) {
 			try {
+				console.log("Parsing json data ", data )
 				data = JSON.parse(data);
+				console.log("Parsed json data ", JSON.stringify(data))
 			} catch(e) {
+				console.log("caught exception parsing json data ", JSON.stringify(e))
 				callback(e);
 				return;
 			}
