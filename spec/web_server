@@ -20,6 +20,7 @@ server.use(function(req, res, next) {
 });
 
 server.use(cors());
+console.log("CORS, ", cors)
 
 server.get('/', function(req, res) {
   res.redirect('/nodeunit.html');
