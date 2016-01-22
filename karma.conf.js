@@ -113,6 +113,7 @@ module.exports = function(config) {
 
       // List of Tests to run
       // To run an individual test, comment the patterns below and specify path to a single test file
+      { pattern: 'spec/realtime/message.test.js', included: false },
       { pattern: 'spec/realtime/*.test.js', included: false },
       { pattern: 'spec/rest/*.test.js', included: false },
       { pattern: 'spec/browser/*.test.js', included: false }
