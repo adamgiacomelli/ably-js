@@ -45,6 +45,7 @@ define(['globals', 'browser-base64', 'ably'], function(ablyGlobals, base64, ably
 
 	function httpReqFunction() {
 		if (isBrowser) {
+			console.log("httpreq  isbrowser")
 			return function(options, callback) {
 				var xhr = createXHR();
 				var uri;
@@ -87,8 +88,10 @@ define(['globals', 'browser-base64', 'ably'], function(ablyGlobals, base64, ably
 						}
 					};
 				} else {
+					console.log("Getting thing with xdr")
 					/* XDR */
 					xhr.onload = function () {
+						console.log("xdr onload ", xhr.status, xhr.responseText)
 						if (xhr.status >= 300) {
 							callback('HTTP request failed '+xhr.status);
 							return;
