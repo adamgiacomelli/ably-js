@@ -75,6 +75,7 @@ define(['ably', 'shared_helper'], function(Ably, helper) {
 		var testData = 'Some data';
 		var errorCallback = function(err){
 			if(err) {
+				console.log("Error callback: ", err)
 				test.ok(false, 'Error received by publish callback ' + displayError(err));
 				closeAndFinish(test, realtime);
 				return;
@@ -121,6 +122,7 @@ define(['ably', 'shared_helper'], function(Ably, helper) {
 					/* subscribe to different message types */
 					var messagesReceived = 0;
 					rtChannel.subscribe(function(msg) {
+						console.log("Received " + (messagesReceived + 1) + '/' + testArguments.length + ': ' + JSON.stringify(msg))
 						test.ok(true, 'Received ' + msg.name);
 						++messagesReceived;
 						switch(msg.name) {
@@ -168,6 +170,7 @@ define(['ably', 'shared_helper'], function(Ably, helper) {
 					/* publish events */
 					var restChannel = rest.channels.get('publishVariations');
 					for(var i = 0; i < testArguments.length; i++) {
+						console.log("Sending " + JSON.stringify(testArguments[i]))
 						restChannel.publish.apply(restChannel, testArguments[i]);
 					}
 				});

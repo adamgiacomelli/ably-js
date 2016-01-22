@@ -57,7 +57,7 @@ module.exports = function(config) {
     sl_safari_9: {
       base: 'SauceLabs',
       browserName: 'safari',
-      platform: 'OS X El Capitan',
+      platform: 'OS X',
       version: '9'
     },
     sl_ios_safari_8_4: {
