@@ -52,6 +52,7 @@ define(['globals', 'browser-base64', 'ably'], function(ablyGlobals, base64, ably
 				uri = options.scheme + '://' + options.host + ':' + options.port + options.path;
 
 				if(xhr.isXDR && !schemeMatchesCurrent(options.scheme)) {
+					console.log("Cant use xdr, using jsonp, window scheme is ", window.location.protocol.slice(0, -1))
 					/* Can't use XDR for cross-scheme. For some requests could just force
 					* the same scheme and be done with it, but not for authenticated
 					* requests to ably, can't use basic auth for non-tls endpoints.
